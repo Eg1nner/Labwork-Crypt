@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Result Page</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    function hashPassword(password) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      return crypto.subtle.digest('SHA-256', data).then(hashBuffer => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      });
+    }
+
+    window.onload = async function() {
+      const params = new URLSearchParams(window.location.search);
+      const login = params.get("login");
+      const password = params.get("password");
+
+      const hashedPassword = await hashPassword(password);
+
+      document.getElementById("login").textContent = login;
+      document.getElementById("password").textContent = password;
+      document.getElementById("hash").textContent = hashedPassword;
+    }
+  </script>
+</head>
+<body>
+<div class="login-container">
+  <h2>Received Information</h2>
+  <p><strong>Login:</strong> <span id="login"></span></p>
+  <p><strong>Password:</strong> <span id="password"></span></p>
+  <p><strong>SHA-256 Hash of Password:</strong> <span id="hash"></span></p>
+</div>
+</body>
+</html>
